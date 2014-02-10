@@ -1,0 +1,18 @@
+def f() {
+    [1,2,3] // type inferred
+    ["sdfjk", 2] // type is Object
+    (1,2)
+    [(1,2), 3, [4,5]]
+    a[1:n]
+    a[-1]
+    x = 1:10
+    x = set(1, 2, 3) // type inferred
+    x = {"bob"?3, "parrt"?34}
+    x = { print "hi" } // lambda
+    x = { 2*x } // lambda with no side-effects; noop
+
+    // list of names whose age > 30
+    names = users[users.age>30].name
+    // extract columns, make new list of temp objects
+    subcolumns = (users.name,users.age) // type is inferred (name:?, age:?)
+}

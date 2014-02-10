@@ -1,0 +1,15 @@
+def f():int {
+    for x in values {
+        print x
+    }
+    for x in 1:10 {print x}
+
+    while i {print "hi"}
+    while x>3 {
+        print "hi"
+    }
+    if x>3 {return 34:35}
+    else {
+        return 2:10
+    }
+}

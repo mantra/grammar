@@ -1,0 +1,5 @@
+enum Days {Mon, Tue, Wed}
+
+def f() {
+    val d : Days = Wed
+}

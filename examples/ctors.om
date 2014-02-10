@@ -1,0 +1,18 @@
+def f() {
+	// typename[expr] is ctor for new list but var[expr] is an index
+	// typename[] is a type but also a ctor for new list
+    x = string[] // empty list of string
+
+	var x = Button(name="hi")
+	var x = Button("hi")
+	var y = float(3)
+	var x = int[34]
+	var x = int[34][10]
+	var x = Button[34]
+	var x = set<int>(1,2)
+	var x = set(1,2) // inferred
+	var x = set<string>[34] // array of 34 sets of strings
+	x = len(x+y)
+
+	x = [] // empty list
+}

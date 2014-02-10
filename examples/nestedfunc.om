@@ -1,0 +1,4 @@
+    def f() : (x:float):int { // args have names in types as we use names in calls
+        def g(x:float):int {} // hidden because of scope
+        return g
+    }

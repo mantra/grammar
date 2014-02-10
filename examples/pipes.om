@@ -1,0 +1,14 @@
+def f() {
+	a -> b
+	a -> b -> c
+	a ->[4] sort >- merge
+	x = a -> b
+	file("foo") -> lines() -> grep("foo") -> sort()
+
+	// compound must be in parens; src, a, sink defined before (...) pipe expr
+	(
+	    src -> a -> sink // splits then merges
+	    src -> b -> sink
+	) // finishes expression otherwise it executes first pipeline
+	// result is what when multiple final sinks?
+}

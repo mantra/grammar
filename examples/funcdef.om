@@ -1,0 +1,13 @@
+def f(x:int=3+4, y:T) {
+    var y : float
+    var z = 99
+    y = 3 + 7 * 9
+    return 4
+    switch z {
+        case 1,2,3 : print "hi"
+        case 4 : print "bi"
+        default :
+    }
+}
+
+def g() : int { return 32 }

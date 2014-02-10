@@ -1,0 +1,23 @@
+/* Comment */
+def f() {
+    var g = nil // empty lambda; type converts to any func ptr
+    var g = {"hi"} // if single expression, no need for return
+    var g = { (x:int) : float => return x*2 }
+    var g = (x:int) => x*2
+    var g = (x:int) => x*2
+    var g = x => x*2	// no () needed if not return type or arg type
+    var g = x,y => x*y	// no () needed if not return type or arg type
+    var g = { (x:int) => return x*2 } // {..} requires statements not expr
+    time({ print "hi" })
+    time() { x => 2*x }
+    h({2.0*x}) // type inf from h def
+    h({(x:int):float => 2.0*x})
+    h({(x:int) => 2.0*x})
+    h(m,x,b => float(m*x+b))  // arg types must be inferred
+    h({m,x,b => return float(m*x+b)})  // arg types must be inferred
+}
+
+def h(f : (x:int):float) {
+    f(x=34)
+    var y = sin(x)
+}

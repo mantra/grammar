@@ -1,0 +1,15 @@
+api abstract class T<ARG> extends V implements A,B<ARG> {
+    class V { } // hidden from outside due to scope
+    var x : int
+    api var x : int
+    static var y : U
+    val x = 3
+    val x:int = 4
+
+    api def f() { }
+    static api def g() { }
+}
+
+class U extends T {
+    overload def f() { }
+}

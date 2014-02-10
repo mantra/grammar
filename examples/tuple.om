@@ -1,0 +1,32 @@
+def f() {
+	var p = (1, 2)	// tuple with type (int,int)
+	g(p)			// structural type match with g's args
+}
+
+def g(tup : (x:int, y:float)) : float {
+	var q = h()
+	var z = h()
+	x,y = h() // unpack; can rename
+	x[i] = 3
+	f()[i] = 3
+	print h().a
+	a.b.c = 4
+	return tup.x + tup.y
+}
+
+def h() : (a:int, b:float) {
+	return (1,2.0)
+}
+
+def q() {
+	var x : (i:int,j:float) = h() // can rename fields? maybe part of type is order?
+	print x.i
+}
+
+def a() {
+	var d = dict<string, (ID:string,age:int)>()
+	d["bob"] = ("23423x", 42)
+	print d["bob"].age
+	var v = d["bob"]
+	v.ID = "30234z"
+}
