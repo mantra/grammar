@@ -63,9 +63,23 @@ argDef
     :   decl ('=' expression)?  // const exprs
     ;
 
-lambdaSignature
-    :   '(' argList? ')' (':' type)?
-    |   ID (',' ID)* // shorthand for inferred arg and return types
+lambdaSignature // no explicit return types in lambdas
+    :   '(' ')'				 // for use like () => 42.0
+	|	'(' decl (',' decl)* ')'		 // (x:int) => x*2
+    |   ID 					 // shorthand for inferred arg
+    |   '(' ID (',' ID)* ')' // shorthand for inferred args
+    ;
+
+blockArgs // no explicit return types in blocks { x,y | return x*y }
+    :   decl (',' decl)* 	 // { x:int | ... }
+    |   ID (',' ID)* 		 // shorthand for inferred arg types
+    ;
+
+funcSignature
+    :   '(' ')' ':' type
+    |	'(' ')'
+	|	'(' argList ')' ':' type
+	|	'(' argList ')'
     ;
 
 /*
@@ -88,37 +102,25 @@ valdecl
 decl:   ID ':' type ;
 
 type:	classOrInterfaceType ('[' ']')*
-    |	primitiveType ('[' ']')*
-    |	tupleType ('[' ']')* // (x:int, y:float)[100]
-	|   functionType ('[' ']')* // (x:int):void[100]???
+    |	builtInType typeArguments? ('[' ']')*
+    |	tupleType ('[' ']')* // (int, float)[100]
+	|   functionType ('[' ']')* // func<(x:int)>[100]
 	;
 
-tupleType
-	:	'(' decl (',' decl)+ ')'
+tupleType // ordered list of types; tuples accessed with t[1], t[2], etc...
+	:	'(' type (',' type)+ ')'
 	;
 
-/** (x:float):int
- *  (x:A):(x:B):C // right assoc. func returns func taking B, returning C
- *
- *  func arg looks complicated:
- *
- *		def do(f : (x:int) : int) : int { return f(3) }
- *                 ^^^^^^^^^^^^^ arg type
- *
- *  On func type (not on func def), need void as return type to distinguish
- *  from tuples:
- *
- *		def do(f : (x:int) : void) : int { return f(3) }
- *                 ^^^^^^^^^^^^^ arg type
- *
- */
 functionType
-    :   '(' argList? ')' ':' (type|'void')
+    :   'func' '<' '(' argList? ')' ':' type '>'
+    |	'func' '<' '(' argList ')' '>'
+    |   'func' '<' '(' type ')' ':' type '>' // single argument doesn't need name
+    |   'func' '<' '(' type ')' '>'
+    |	'func' // ref to func with no args, no return value like {}
     ;
 
 classOrInterfaceType
 	:	qualifiedName typeArguments?
-    |	'set' typeArguments?
 	;
 
 typeArguments
@@ -129,7 +131,7 @@ typeArgumentNames // only built-in types can use this like llist<string>
     :   '<' ID (',' ID)* '>'
     ;
 
-primitiveType
+builtInType
     :   'boolean'
     |   'char'
     |   'byte'
@@ -138,13 +140,15 @@ primitiveType
     |   'long'
     |   'float'
     |   'double'
-/*
-    |	'dict'
-    |	'string'
-    |	'tree'
-    |	'llist'
-    */
-    ;
+	|	'string'
+
+    |	(	'map'
+		|	'tree'
+		|	'llist'
+		|	'set'
+		)
+		typeArguments?
+	;
 
 block : '{' stat* '}' ;
 
@@ -244,7 +248,7 @@ primary
     |   literal
     |   type '.' 'class'
     |   list
-    |   dict
+    |   map
     |   set
     |   ctor
     |   lambda
@@ -252,31 +256,30 @@ primary
     ;
 
 // ctor (ambig with call)
-ctor:	classOrInterfaceType '(' argExprList? ')'
-	|	primitiveType        '(' argExprList ')'
-	|	classOrInterfaceType ('[' expression? ']')+
-	|	primitiveType        ('[' expression? ']')+
+ctor:	classOrInterfaceType '(' argExprList? ')'  	// Button(title="foo")
+	|	builtInType          '(' argExprList? ')'  	// int(), string()
+	|	classOrInterfaceType ('[' expression? ']')+	// User[10][] list of 10 User lists of unspecified initial size
+	|	builtInType        ('[' expression? ']')+ // int[] list of ints with unspecified initial size, int[10] 10 initial ints
 	;
 
 list:   '[' ']' // type inferred
     |   '[' expression (',' expression)* ']'
     ;
 
-dict:   '{' '}' // empty set, not ambig with blank lambda {=>}
-    |   '{' dictMap (',' dictMap)* '}'
+map:   '[' mapElem (',' mapElem)* ']'
     ;
 
-dictMap
-    :   expression '?' expression
+mapElem
+    :   expression '=' expression
     ;
 
 // special case for convenience set(1,2), set<User>(User(), User())
 set :   'set' typeArguments? '(' expression (',' expression)* ')' ;
 
-// no empty lambda, just use nil
 lambda
     :   lambdaSignature '=>' expression   // special case single expression
-    |   '{' (lambdaSignature '=>')? stat+ '}'
+    |   '{' (blockArgs '|')? stat+ '}'
+    |   '{' '}' // empty lambda
     ;
 
 qualifiedName
@@ -298,13 +301,6 @@ assignmentOperator
     |   '-='
     |   '*='
     |   '/='
-    |   '&='
-    |   '|='
-    |   '^='
-    |   '%='
-    |   '<<='
-    |   '>>='
-    |   '>>>='
     ;
 
 ABSTRACT : 'abstract';

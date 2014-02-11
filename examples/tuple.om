@@ -3,30 +3,30 @@ def f() {
 	g(p)			// structural type match with g's args
 }
 
-def g(tup : (x:int, y:float)) : float {
+def g(tup : (int, float)) : float {
 	var q = h()
 	var z = h()
-	x,y = h() // unpack; can rename
+	x,y = h() // unpack
 	x[i] = 3
 	f()[i] = 3
-	print h().a
+	print h()[1]
 	a.b.c = 4
-	return tup.x + tup.y
+	return tup[1] + tup[2]
 }
 
-def h() : (a:int, b:float) {
+def h() : (int, float) {
 	return (1,2.0)
 }
 
 def q() {
-	var x : (i:int,j:float) = h() // can rename fields? maybe part of type is order?
-	print x.i
+	var x : (int,float) = h()
+	print x[1]
 }
 
 def a() {
-	var d = dict<string, (ID:string,age:int)>()
+	var d = dict<string, (string,int)>()
 	d["bob"] = ("23423x", 42)
-	print d["bob"].age
+	print d["bob"][2]
 	var v = d["bob"]
-	v.ID = "30234z"
+	v[1] = "30234z"
 }

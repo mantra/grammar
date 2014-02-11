@@ -4,6 +4,7 @@ def f() {
 	a ->[4] sort >- merge
 	x = a -> b
 	file("foo") -> lines() -> grep("foo") -> sort()
+//	file("foo") => lines() => grep("foo") => sort()  is => better?
 
 	// compound must be in parens; src, a, sink defined before (...) pipe expr
 	(

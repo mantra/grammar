@@ -6,6 +6,7 @@ def f() {
 	var x = Button(name="hi")
 	var x = Button("hi")
 	var y = float(3)
+	var x = int[]  // list w/o initial size
 	var x = int[34]
 	var x = int[34][10]
 	var x = Button[34]

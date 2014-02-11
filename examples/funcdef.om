@@ -11,3 +11,7 @@ def f(x:int=3+4, y:T) {
 }
 
 def g() : int { return 32 }
+
+def main() {
+	var fptr : func<(x:int, y:T) : float>
+}

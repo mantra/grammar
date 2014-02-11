@@ -1,0 +1,18 @@
+def foo() {
+	var users = ["parrt"=10, "tombu"=6] // easiest and unambig for map
+	// var users = ["parrt"?10, "tombu"?6] // weird but unique
+	//var users = ["parrt":10, "tombu":6] can't use since [1:6] looks like index range
+
+	var x = [] // empty list
+	var x = map() // empty map? probably most explicit and not much work
+	var x = map<string,int>() // empty map? probably most explicit and not much work
+
+	var fptr : func = foo
+	var fptr : func<(int):float> // 1 arg don't need name of arg?
+	var y : float = fptr(34)
+
+	var names = set("parrt", "tombu")
+	var names = set<string>("parrt", "tombu")
+}
+
+def g(x:int) : float { }
