@@ -1,4 +1,8 @@
+/** javadoc */
 def f() {
+/*
+asdkljasdf
+*/
 	a => b
 	a => b => c
 	a =>[4] sort

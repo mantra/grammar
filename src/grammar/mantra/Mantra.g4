@@ -260,7 +260,7 @@ tuple:	'(' expression (',' expression)+ ')' ; // can also be a tuple of pipeline
 ctor:	classOrInterfaceType '(' argExprList? ')'  	// Button(title="foo")
 	|	builtInType          '(' argExprList? ')'  	// int(), string()
 	|	classOrInterfaceType ('[' expression? ']')+	// User[10][] list of 10 User lists of unspecified initial size
-	|	builtInType        ('[' expression? ']')+ // int[] list of ints with unspecified initial size, int[10] 10 initial ints
+	|	builtInType          ('[' expression? ']')+ // int[] list of ints with unspecified initial size, int[10] 10 initial ints
 	;
 
 list:   '[' ']' // type inferred
@@ -578,27 +578,23 @@ CharacterLiteral
 
 fragment
 SingleCharacter
-	:	~['\\]
+	:	~['\\\r\n]
 	;
-
-// §3.10.5 String Literals
 
 StringLiteral
-	:	'"' StringCharacters? '"'
+	:	'"' StringCharacter* '"'
 	;
 
-fragment
-StringCharacters
-	:	StringCharacter+
+UNTERMINATED_STRING_LITERAL
+	:  '\'' StringCharacter*
 	;
+
 
 fragment
 StringCharacter
-	:	~["\\]
+	:	~["\\\r\n]
 	|	EscapeSequence
 	;
-
-// §3.10.6 Escape Sequences for Character and String Literals
 
 fragment
 EscapeSequence
@@ -666,7 +662,7 @@ SUB_ASSIGN : '-=';
 MUL_ASSIGN : '*=';
 DIV_ASSIGN : '/=';
 
-ID  :	JavaLetter JavaLetterOrDigit*
+ID  :	JavaLetter JavaLetterOrDigit*  // follow Java conventions
 	;
 
 fragment
@@ -696,10 +692,14 @@ WS  :  [ \t\u000C]+ -> skip
 
 NL  :   '\r'? '\n' -> skip ;    // command separator (ignore for now)
 
-COMMENT
-    :   '/*' .*? '*/' -> skip
-    ;
+DOC_COMMENT
+	:	'/**' .*? ('*/' | EOF) -> channel(HIDDEN)
+	;
+
+BLOCK_COMMENT
+	:	'/*' .*? ('*/' | EOF)  -> channel(HIDDEN)
+	;
 
 LINE_COMMENT
-    :   '//' ~[\r\n]* -> skip
-    ;
+	:	'//' ~[\r\n]*  -> channel(HIDDEN)
+	;
