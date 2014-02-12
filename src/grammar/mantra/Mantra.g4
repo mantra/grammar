@@ -229,20 +229,19 @@ expression
 	|   expression 'or' expression
 	|   expression 'in' expression
 	|   expression '?' expression ':' expression
-	|	expression '->' '[' expression ']' expression
-	|	expression '->' '*' expression
-	|	expression ('->'|'>-') expression // pipe, merge
+	|	expression pipeOperator	expression
     ;
 
-// dup with expr but need to limit in primary
-pipeline
-    :   expression ('->'|'>-') expression
+pipeOperator
+	:	'=>' '[' expression ']'
+	|	'=>*'
+	|	'*=>' // pipe, merge
+	|	'=>'
     ;
 
 primary
 	:	'(' expression ')'
-	|	'(' pipeline pipeline+ ')' // 2+ pipes in parens is graph spec
-    |	'(' expression (',' expression)+ ')' // tuple
+    |	tuple
     |   'this'
     |   'super'
     |   literal
@@ -254,6 +253,8 @@ primary
     |   lambda
     |   ID // string[] could match string here then [] as next statement; keep this last
     ;
+
+tuple:	'(' expression (',' expression)+ ')' ; // can also be a tuple of pipelines, yielding pipeline graph
 
 // ctor (ambig with call)
 ctor:	classOrInterfaceType '(' argExprList? ')'  	// Button(title="foo")
@@ -277,7 +278,7 @@ mapElem
 set :   'set' typeArguments? '(' expression (',' expression)* ')' ;
 
 lambda
-    :   lambdaSignature '=>' expression   // special case single expression
+    :   lambdaSignature '->' expression   // special case single expression
     |   '{' (blockArgs '|')? stat+ '}'
     |   '{' '}' // empty lambda
     ;
@@ -655,20 +656,15 @@ BITAND : '&';
 BITOR : '|';
 CARET : '^';
 MOD : '%';
-FROM : '=>' ;
-PIPE : '->' ;
+YIELDS : '->' ; // lambda
+PIPE : '=>' ;
+PIPE_MANY : '=>*' ;
+MERGE_MANY : '*=>' ;
 
 ADD_ASSIGN : '+=';
 SUB_ASSIGN : '-=';
 MUL_ASSIGN : '*=';
 DIV_ASSIGN : '/=';
-AND_ASSIGN : '&=';
-OR_ASSIGN : '|=';
-XOR_ASSIGN : '^=';
-MOD_ASSIGN : '%=';
-LSHIFT_ASSIGN : '<<=';
-RSHIFT_ASSIGN : '>>=';
-URSHIFT_ASSIGN : '>>>=';
 
 ID  :	JavaLetter JavaLetterOrDigit*
 	;

@@ -1,15 +1,26 @@
 def f() {
-	a -> b
-	a -> b -> c
-	a ->[4] sort >- merge
-	x = a -> b
-	file("foo") -> lines() -> grep("foo") -> sort()
-//	file("foo") => lines() => grep("foo") => sort()  is => better?
+	a => b
+	a => b => c
+	a =>[4] sort
+	a => sort *=> merge
+	a =>[4] sort *=> merge
+	a =>* sort *=> merge
 
-	// compound must be in parens; src, a, sink defined before (...) pipe expr
+	x = a => b // x is the stream emanating from b
+	x = a => file("foo") // invalid! file("foo") is a sink; no value
+
+	file("foo") => lines() => grep("foo") => sort()
+
+	// compound must be in parens like a tuple; src, a, sink defined before (...) pipe expr
 	(
-	    src -> a -> sink // splits then merges
-	    src -> b -> sink
-	) // finishes expression otherwise it executes first pipeline
-	// result is what when multiple final sinks?
+	    src => a => sink, // splits then merges
+	    src => b => sink
+	) // finishes expression otherwise it would execute first pipeline
+
+	// result is what when multiple final sinks? perhaps result is tuple of sinks/streams?
+	// or error if no final sink? could have multiple pipes in parallel:
+	(
+		file("log1") => grep("foo") => file("out1"),
+		file("log2") => grep("bar") => file("out2")
+	)
 }
