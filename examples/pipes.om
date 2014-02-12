@@ -27,4 +27,6 @@ asdkljasdf
 		file("log1") => grep("foo") => file("out1"),
 		file("log2") => grep("bar") => file("out2")
 	)
+
+	var a,b = (x=>y, y=>z) // get streams emanating from y and z into a, b variables
 }

@@ -91,7 +91,7 @@ propdecl
 
 vardecl
     :   'var' decl ('=' expression)?
-    |   'var' ID ('=' expression)?
+    |   'var' ID (',' ID)* ('=' expression)? // type inf can use multiple assign on left
     ;
 
 valdecl
@@ -687,10 +687,10 @@ JavaLetterOrDigit
 		{Character.isJavaIdentifierPart(Character.toCodePoint((char)_input.LA(-2), (char)_input.LA(-1)))}?
 	;
 
-WS  :  [ \t\u000C]+ -> skip
+WS  :  [ \t\u000C]+ -> channel(HIDDEN)
     ;
 
-NL  :   '\r'? '\n' -> skip ;    // command separator (ignore for now)
+NL  :   '\r'? '\n' -> channel(HIDDEN) ;    // command separator (ignore for now)
 
 DOC_COMMENT
 	:	'/**' .*? ('*/' | EOF) -> channel(HIDDEN)
